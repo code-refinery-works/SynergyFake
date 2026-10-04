@@ -1,0 +1,721 @@
+:root {
+    --green: #00ff41;
+    --dark-green: #003b00;
+    --red: #ff4444;
+    --yellow: #ffcc00;
+    --blue: #00aaff;
+    --bg: #0a0a0f;
+    --panel: #0d1117;
+    --border: #1e2a1e;
+    --text: #c9d1d9;
+    --dim: #6e7681;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Courier New', 'MS Gothic', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+    user-select: none;
+  }
+
+  /* ── メインダッシュボード ── */
+  #dashboard {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+    background: var(--bg);
+  }
+
+  /* タイトルバー */
+  #titlebar {
+    background: linear-gradient(90deg, #0d1117, #0a1a0a);
+    border-bottom: 1px solid var(--green);
+    padding: 6px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+  }
+  #titlebar .logo {
+    color: var(--green);
+    font-weight: bold;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px var(--green);
+  }
+  #titlebar .badge {
+    background: var(--red);
+    color: white;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    animation: blink 1.5s infinite;
+  }
+  #titlebar .spacer { flex: 1; }
+  #titlebar .clock {
+    color: var(--green);
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow: 0 0 6px var(--green);
+  }
+
+  /* メインコンテンツエリア */
+  #main-area {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 220px 1fr 200px;
+    grid-template-rows: 1fr 120px;
+    gap: 1px;
+    background: var(--border);
+    overflow: hidden;
+  }
+
+  .panel {
+    background: var(--panel);
+    padding: 10px;
+    overflow: hidden;
+  }
+  .panel-title {
+    font-size: 10px;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--dark-green);
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .panel-title::before {
+    content: '▶';
+    font-size: 8px;
+  }
+
+  /* 左パネル：ステータス */
+  #left-panel { grid-row: 1 / 3; }
+
+  .status-item {
+    margin-bottom: 12px;
+  }
+  .status-label {
+    font-size: 10px;
+    color: var(--dim);
+    margin-bottom: 3px;
+  }
+  .status-value {
+    font-size: 12px;
+    color: var(--green);
+    text-shadow: 0 0 4px var(--green);
+  }
+  .progress-bar-wrap {
+    background: #111;
+    border: 1px solid var(--dark-green);
+    border-radius: 2px;
+    height: 8px;
+    overflow: hidden;
+    margin-top: 3px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), #00ff99);
+    box-shadow: 0 0 6px var(--green);
+    transition: width 0.5s ease;
+  }
+  .progress-bar-fill.red {
+    background: linear-gradient(90deg, var(--red), #ff8844);
+    box-shadow: 0 0 6px var(--red);
+  }
+  .progress-bar-fill.yellow {
+    background: linear-gradient(90deg, var(--yellow), #ffee88);
+    box-shadow: 0 0 6px var(--yellow);
+  }
+
+  .kbd-hint {
+    background: #1a1a2e;
+    border: 1px solid #333;
+    border-radius: 3px;
+    padding: 2px 5px;
+    font-size: 10px;
+    color: var(--dim);
+    display: inline-block;
+    margin: 1px;
+  }
+
+  .shortcut-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 5px;
+    font-size: 10px;
+    color: var(--dim);
+  }
+  .shortcut-row span { color: var(--text); }
+
+  /* 中央パネル：メイン表示 */
+  #center-panel { position: relative; overflow: hidden; }
+
+  #fake-terminal {
+    height: 100%;
+    overflow: hidden;
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--green);
+  }
+  .term-line { white-space: nowrap; overflow: hidden; }
+  .term-line.error { color: var(--red); }
+  .term-line.warn { color: var(--yellow); }
+  .term-line.info { color: var(--blue); }
+
+  /* 右パネル：カンペ */
+  #right-panel { grid-row: 1 / 3; }
+
+  #prompt-box {
+    background: #0a0a1a;
+    border: 1px solid #333366;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+    min-height: 80px;
+    cursor: pointer;
+    transition: border-color 0.3s;
+  }
+  #prompt-box:hover { border-color: var(--blue); }
+  #prompt-text {
+    font-size: 11px;
+    color: #aaaaff;
+    line-height: 1.6;
+    font-style: italic;
+  }
+  #prompt-instruction {
+    font-size: 9px;
+    color: var(--dim);
+    margin-top: 6px;
+  }
+
+  .log-item {
+    font-size: 10px;
+    color: var(--dim);
+    padding: 2px 0;
+    border-bottom: 1px solid #111;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .log-item.new { color: var(--text); }
+
+  /* 下部パネル */
+  #bottom-left {
+    grid-column: 1;
+    padding: 8px 10px;
+    background: #0a0d0a;
+  }
+  #bottom-center {
+    grid-column: 2 / 4;
+    background: #0a0a0d;
+    padding: 8px 12px;
+    overflow: hidden;
+  }
+
+  /* ボトムバー */
+  #statusbar {
+    background: #0d1117;
+    border-top: 1px solid var(--green);
+    padding: 4px 12px;
+    font-size: 10px;
+    color: var(--dim);
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  #statusbar .status-ok { color: var(--green); }
+  #statusbar .status-warn { color: var(--yellow); }
+
+  /* ── オーバーレイ画面群 ── */
+  .overlay-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    cursor: none;
+  }
+  .overlay-screen.active { display: flex; }
+
+  /* ハッカー画面 */
+  #hacker-screen {
+    background: #000;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #matrix-canvas {
+    position: absolute;
+    inset: 0;
+  }
+  #hacker-overlay-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 2;
+  }
+  #hacker-overlay-text h1 {
+    font-size: clamp(20px, 3vw, 36px);
+    color: var(--green);
+    text-shadow: 0 0 20px var(--green);
+    letter-spacing: 4px;
+    animation: glitch 3s infinite;
+  }
+  #hacker-overlay-text p {
+    color: #00aa33;
+    font-size: 13px;
+    margin-top: 10px;
+    animation: blink 0.8s infinite;
+  }
+
+  /* Excel地獄画面 */
+  #excel-screen {
+    background: #1e1e1e;
+    flex-direction: column;
+  }
+  #excel-toolbar {
+    background: #2d2d2d;
+    border-bottom: 1px solid #444;
+    padding: 4px 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  #excel-toolbar .xl-btn {
+    background: #3c3c3c;
+    border: 1px solid #555;
+    color: #ccc;
+    padding: 2px 8px;
+    font-size: 11px;
+    border-radius: 2px;
+    cursor: default;
+  }
+  #excel-toolbar .xl-title {
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 8px;
+  }
+  #excel-formula-bar {
+    background: #252525;
+    border-bottom: 1px solid #444;
+    padding: 3px 8px;
+    font-size: 12px;
+    color: #cc4444;
+    font-family: 'Courier New', monospace;
+  }
+  #excel-grid-wrap {
+    flex: 1;
+    overflow: auto;
+  }
+  #excel-grid {
+    border-collapse: collapse;
+    font-size: 11px;
+    font-family: 'Courier New', monospace;
+  }
+  #excel-grid th {
+    background: #2d2d2d;
+    color: #aaa;
+    border: 1px solid #444;
+    padding: 2px 8px;
+    min-width: 80px;
+    font-weight: normal;
+    position: sticky;
+    top: 0;
+    text-align: center;
+  }
+  #excel-grid td {
+    border: 1px solid #333;
+    padding: 1px 4px;
+    min-width: 80px;
+    white-space: nowrap;
+    color: #cc4444;
+  }
+  #excel-grid td.selected { background: #1a3a5c; color: #ff6666; }
+  #excel-grid .row-header {
+    background: #2d2d2d;
+    color: #aaa;
+    text-align: right;
+    padding-right: 6px;
+    position: sticky;
+    left: 0;
+    border: 1px solid #444;
+  }
+  #excel-screen .esc-hint {
+    position: absolute;
+    bottom: 10px;
+    right: 16px;
+    font-size: 10px;
+    color: #555;
+  }
+
+  /* AI思考中画面 */
+  #ai-screen {
+    background: radial-gradient(ellipse at center, #0a0020 0%, #000 100%);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+  }
+  #ai-logo {
+    font-size: clamp(24px, 4vw, 48px);
+    color: #aa44ff;
+    text-shadow: 0 0 30px #aa44ff, 0 0 60px #6600cc;
+    letter-spacing: 6px;
+    font-weight: bold;
+    animation: pulse-glow 2s infinite;
+  }
+  #ai-subtitle {
+    color: #7744aa;
+    font-size: 14px;
+    letter-spacing: 2px;
+  }
+  #ai-task-box {
+    background: #0f0020;
+    border: 1px solid #6600cc;
+    border-radius: 8px;
+    padding: 24px 40px;
+    text-align: center;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 0 40px #33006688;
+  }
+  #ai-task-label {
+    font-size: 13px;
+    color: #aa88ff;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+  #ai-task-text {
+    font-size: clamp(14px, 2vw, 20px);
+    color: #ffffff;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  #ai-progress-wrap {
+    background: #1a0030;
+    border: 1px solid #440088;
+    border-radius: 20px;
+    height: 20px;
+    overflow: hidden;
+    position: relative;
+  }
+  #ai-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #6600cc, #cc44ff, #6600cc);
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+    border-radius: 20px;
+    width: 42%;
+  }
+  #ai-progress-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #fff;
+    font-weight: bold;
+  }
+  #ai-log-area {
+    font-size: 11px;
+    color: #554477;
+    line-height: 1.8;
+    text-align: left;
+    width: 100%;
+    margin-top: 16px;
+  }
+  #ai-log-area .ai-log-line { color: #8866aa; }
+  #ai-log-area .ai-log-line.new { color: #bb99ff; }
+  #ai-screen .esc-hint {
+    color: #443355;
+    font-size: 10px;
+  }
+
+  /* Boss Alert 画面 */
+  #boss-screen {
+    background: #fff;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  #boss-header {
+    background: #004499;
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  #boss-header .company-logo {
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    font-family: serif;
+  }
+  #boss-header .doc-title {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+  #boss-content {
+    padding: 30px 60px;
+    color: #222;
+    font-family: 'MS Mincho', 'Yu Mincho', serif;
+    max-width: 900px;
+    margin: 0 auto;
+    flex: 1;
+  }
+  #boss-content h1 {
+    font-size: 22px;
+    text-align: center;
+    margin-bottom: 30px;
+    letter-spacing: 2px;
+    border-bottom: 2px solid #004499;
+    padding-bottom: 10px;
+  }
+  #boss-content h2 {
+    font-size: 16px;
+    margin: 20px 0 10px;
+    color: #004499;
+  }
+  #boss-content p {
+    font-size: 14px;
+    line-height: 2;
+    text-indent: 1em;
+    margin-bottom: 10px;
+  }
+  .esc-corner {
+    position: fixed;
+    bottom: 12px;
+    right: 16px;
+    font-size: 10px;
+    color: #aaa;
+    font-family: 'Courier New', monospace;
+    z-index: 200;
+  }
+
+  /* ため息ポップアップ */
+  #sigh-popup {
+    position: fixed;
+    bottom: 60px;
+    left: 20px;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: #888;
+    z-index: 500;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s, transform 0.4s;
+    pointer-events: none;
+    max-width: 250px;
+  }
+  #sigh-popup.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* マウス振動中インジケーター */
+  #mouse-shake-indicator {
+    position: fixed;
+    top: 50px;
+    right: 20px;
+    background: #1a0000;
+    border: 1px solid var(--red);
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 11px;
+    color: var(--red);
+    z-index: 500;
+    display: none;
+    animation: blink 0.5s infinite;
+  }
+
+  /* ヘルプパネル */
+  #help-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #0d1117;
+    border: 1px solid var(--green);
+    border-radius: 8px;
+    padding: 24px;
+    z-index: 600;
+    width: 500px;
+    max-width: 95vw;
+    display: none;
+    box-shadow: 0 0 40px rgba(0,255,65,0.2);
+  }
+  #help-panel.show { display: block; }
+  #help-panel h2 {
+    color: var(--green);
+    font-size: 14px;
+    margin-bottom: 16px;
+    letter-spacing: 2px;
+    text-align: center;
+    text-shadow: 0 0 8px var(--green);
+  }
+  .help-row {
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #1a2a1a;
+    gap: 12px;
+  }
+  .help-key {
+    background: #1e2a1e;
+    border: 1px solid #3a4a3a;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 12px;
+    color: var(--green);
+    min-width: 80px;
+    text-align: center;
+    font-weight: bold;
+  }
+  .help-desc {
+    font-size: 12px;
+    color: var(--text);
+    flex: 1;
+  }
+  #help-close {
+    display: block;
+    margin: 16px auto 0;
+    background: var(--dark-green);
+    border: 1px solid var(--green);
+    color: var(--green);
+    padding: 6px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    transition: background 0.2s;
+  }
+  #help-close:hover { background: #006600; }
+
+  /* ───── アニメーション ───── */
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  @keyframes glitch {
+    0%, 90%, 100% { text-shadow: 0 0 20px var(--green); }
+    92% { text-shadow: 3px 0 20px #ff0044, -3px 0 var(--green); }
+    94% { text-shadow: -3px 0 20px #00ffff, 3px 0 var(--green); }
+    96% { text-shadow: 3px 0 20px #ff0044, -3px 0 var(--green); }
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { text-shadow: 0 0 30px #aa44ff, 0 0 60px #6600cc; }
+    50% { text-shadow: 0 0 50px #cc66ff, 0 0 100px #8800ff; }
+  }
+  @keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+  }
+
+  /* スキャンライン演出（ハッカー画面） */
+  .scanline-overlay {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.15) 2px,
+      rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 3;
+  }
+  .scanline-moving {
+    position: absolute;
+    left: 0; right: 0;
+    height: 60px;
+    background: linear-gradient(transparent, rgba(0,255,65,0.04), transparent);
+    animation: scanline 4s linear infinite;
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  /* カーソル非表示（オーバーレイ時） */
+  .no-cursor { cursor: none !important; }
+
+  /* AI画面の浮遊パーティクル */
+  .ai-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #8844ff;
+    border-radius: 50%;
+    animation: float-up linear infinite;
+    opacity: 0;
+  }
+  @keyframes float-up {
+    0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(-20px) translateX(var(--drift)); opacity: 0; }
+  }
+
+@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  @keyframes matrixFade { from{opacity:1} to{opacity:0} }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  @keyframes mouseshake {
+    0%{transform:translate(0,0)}
+    20%{transform:translate(-2px,1px)}
+    40%{transform:translate(2px,-1px)}
+    60%{transform:translate(-1px,2px)}
+    80%{transform:translate(1px,-2px)}
+    100%{transform:translate(0,0)}
+  }
+  .kbd-hint {
+    display:inline-block;
+    background:#1a2a1a;
+    border:1px solid var(--green);
+    border-radius:3px;
+    padding:1px 7px;
+    font-size:10px;
+    color:var(--green);
+    font-family:monospace;
+    box-shadow:0 2px 0 var(--dark-green);
+  }
+  .shortcut-row {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:10px;
+    color:var(--dark-green);
+    margin-bottom:4px;
+  }
+  .spacer { flex:1; }
+  #mouse-cursor-fake {
+    position:fixed;
+    width:12px;
+    height:12px;
+    border:2px solid var(--green);
+    border-radius:50%;
+    pointer-events:none;
+    z-index:99998;
+    display:none;
+    box-shadow:0 0 8px var(--green);
+  }
